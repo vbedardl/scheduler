@@ -7,11 +7,14 @@ import Empty from 'components/Appointment/Empty'
 import useVisualMode from 'hooks/useVisualMode'
 import Form from 'components/Appointment/Form'
 import Status from 'components/Appointment/Status'
+import Confirm from 'components/Appointment/Confirm'
 
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
 const SAVING = "SAVING";
+const DELETING = "DELETING";
+const CONFIRM = "CONFIRM";
 
 
 export default function Appointment(props) {
@@ -32,11 +35,22 @@ export default function Appointment(props) {
 
   }
 
+  //OPEN CONFIRM BOX FOR DELETE
   function ondelete(id){
-    transition(SAVING)
+    transition(CONFIRM)
+  }
+
+  //CONFIRM THE DELETION AND MAKE THE REQUEST
+  function realDelete(id){
+    transition(DELETING)
     props.cancelInterview(id)
     .then(() => transition('EMPTY'))
     .catch(e => console.log('error in on delete:',e))
+  }
+
+  //CANCEL THE DELETION
+  function cancelDelete(){
+    back()
   }
 
   return(
@@ -48,7 +62,7 @@ export default function Appointment(props) {
         id={props.id}
         interviewer={interview.interviewer} 
         student={interview.student}
-        onDelete={() => ondelete(props.id)}
+        onDelete={() => ondelete()}
         />
       )}
       {mode === CREATE && (
@@ -56,6 +70,12 @@ export default function Appointment(props) {
       )}
       {mode === SAVING && (
         <Status message='Saving...' />
+      )}
+      {mode === DELETING && (
+        <Status message='Deleting...' />
+      )}
+      {mode === CONFIRM && (
+        <Confirm onCancel={()=>cancelDelete()} onConfirm={() => realDelete(props.id)} />
       )}
     </article>
   )
