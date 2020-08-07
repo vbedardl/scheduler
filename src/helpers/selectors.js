@@ -54,3 +54,38 @@ function getInterviewersForDay(state, day) {
   return result
 }
 exports.getInterviewersForDay = getInterviewersForDay
+
+function getDayObjectByName(days, day){
+  return days.filter(elm => {
+    if(elm.name === day){
+      return elm
+    }
+  })[0]
+}
+exports.getDayObjectByName = getDayObjectByName
+
+function getNewArrayOfDays(days, today, newToday){
+  const newDays = [...days]
+if(today === 'Monday'){
+  newDays[0] = newToday
+}else if(today === 'Tuesday'){
+  newDays[1] = newToday
+}else if(today === 'Wednesday'){
+  newDays[2] = newToday
+}else if(today === 'Thursday'){
+  newDays[3] = newToday
+}else if(today === 'Friday'){
+  newDays[4] = newToday
+}
+return newDays
+}
+exports.getNewArrayOfDays = getNewArrayOfDays
+
+
+const getNumberOfSpots = (day, state) => {
+  const spots = day.appointments.filter(elm => {
+    return state.appointments[elm].interview === null
+  })
+  return spots.length
+}
+exports.getNumberOfSpots = getNumberOfSpots
