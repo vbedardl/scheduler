@@ -64,6 +64,15 @@ function getDayObjectByName(days, day){
 }
 exports.getDayObjectByName = getDayObjectByName
 
+function getDayObjectById(days, id){
+  return days.filter(elm => {
+    if(elm.id === id){
+      return elm
+    }
+  })[0]
+}
+exports.getDayObjectById = getDayObjectById
+
 function getNewArrayOfDays(days, today, newToday){
   const newDays = [...days]
 if(today === 'Monday'){
