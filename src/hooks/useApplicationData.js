@@ -1,103 +1,89 @@
-import axios from 'axios'
-import { useEffect, useReducer} from 'react'
-import {getDayObjectByName, getNewArrayOfDays, getNumberOfSpots} from '../helpers/selectors'
-import {reducer} from '../reducers/application'
+import axios from "axios";
+import { useEffect, useReducer } from "react";
+import {
+  reducer,
+  SET_APPLICATION_DATA,
+  SET_DAY,
+  SET_INTERVIEW,
+} from "../reducers/application";
 
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 
-const SET_DAY = "SET_DAY"
-const SET_APPLICATION_DATA = "SET_APPLICATION_DATA"
-const SET_INTERVIEW = "SET_INTERVIEW"
-
-
-export default function useApplicationData(){
-
+//Main Application Logic
+export default function useApplicationData() {
+  //Setting the state/reducer
   const [state, dispatch] = useReducer(reducer, {
-    day: 'Monday',
+    day: "Monday",
     days: [],
     appointments: {},
-    interviewers: {}
-  })
+    interviewers: {},
+  });
 
-  const setDay = day => dispatch({ type: SET_DAY, value: day })
+  const setDay = (day) => dispatch({ type: SET_DAY, value: day });
 
+  //Axios request to 3 data endpoints
   useEffect(() => {
     Promise.all([
-      axios.get('/api/days'),
-      axios.get('/api/appointments'),
-      axios.get('/api/interviewers')
+      axios.get("/api/days"),
+      axios.get("/api/appointments"),
+      axios.get("/api/interviewers"),
     ]).then((all) => {
       dispatch({
         type: SET_APPLICATION_DATA,
-        value:{
+        value: {
           interviewers: all[2].data,
           days: all[0].data,
-          appointments: all[1].data
-        }
-      })
-    })
-  }, [])
+          appointments: all[1].data,
+        },
+      });
+    });
+  });
 
+  //Websocket Set Up
   useEffect(() => {
-
-    const ws = new WebSocket('ws://localhost:8001')
-    ws.onopen = e => ws.send('ping')
-    ws.onmessage = e => {
-
-      const message = JSON.parse(e.data)
-      if(message.type === 'SET_INTERVIEW'){
-        if(message.interview){
+    const ws = new WebSocket("ws://localhost:8001");
+    //(process.env.REACT_APP_WEBSOCKET_URL);
+    //("ws://localhost:8001");
+    //ws.onopen = (e) => ws.send("ping");
+    ws.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      if (message.type === "SET_INTERVIEW") {
+        if (message.interview) {
           dispatch({
             type: SET_INTERVIEW,
-            value:{
+            value: {
               id: message.id,
-              interview: message.interview
-            }
-          })
-        }else{
+              interview: message.interview,
+            },
+          });
+        } else {
           dispatch({
-            type:SET_INTERVIEW,
-            value:{
+            type: SET_INTERVIEW,
+            value: {
               id: message.id,
-              interview:null
-            }
-          })
+              interview: null,
+            },
+          });
         }
       }
-    }
-  }, [])
+    };
+  }, []);
 
+  //Cancelling interview request to the database
   const cancelInterview = (id) => {
-    return axios.delete(`/api/appointments/${id}`)
-    // .then(() => {
-    //   dispatch({
-    //     type:SET_INTERVIEW,
-    //     value:{
-    //       id,
-    //       interview:null
-    //     }
-    //   })
-    // })
-  } 
+    return axios.delete(`/api/appointments/${id}`);
+  };
 
+  //Booking interview request to the database
   const bookInterview = (id, interview) => {
     const appointment = {
       ...state.appointments[id],
-      interview: { ...interview }
+      interview: { ...interview },
     };
-    
-    return axios.put(`/api/appointments/${id}`, appointment)
-    // .then(() => {
-    //   dispatch({
-    //     type: SET_INTERVIEW,
-    //     value:{
-    //       id,
-    //       interview
-    //     }
-    //   })
-    // })
-  }
 
-return {state, setDay, bookInterview, cancelInterview}
-} 
+    return axios.put(`/api/appointments/${id}`, appointment);
+  };
+
+  return { state, setDay, bookInterview, cancelInterview };
+}

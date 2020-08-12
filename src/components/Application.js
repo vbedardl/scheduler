@@ -1,36 +1,40 @@
 import React from "react";
 
 import "components/Application.scss";
-import Appointment from 'components/Appointment'
+import Appointment from "components/Appointment";
 import DayList from "./DayList";
-import helper from '../helpers/selectors'
-import useApplicationData from '../hooks/useApplicationData'
-
+import {
+  getInterviewersForDay,
+  getAppointmentsForDay,
+  getInterview,
+} from "../helpers/selectors";
+import useApplicationData from "../hooks/useApplicationData";
 
 export default function Application(props) {
   const {
     state,
     setDay,
     bookInterview,
-    cancelInterview
-  } = useApplicationData()
+    cancelInterview,
+  } = useApplicationData();
 
-  const interviewersMap = helper.getInterviewersForDay(state, state.day)
+  //GET INTERVIEWERS FOR SELECTED DAY
+  const interviewersMap = getInterviewersForDay(state, state.day);
 
-  const appointmentsMap = helper.getAppointmentsForDay(state, state.day).map(
-    elm => {
-      return(
-        <Appointment
-          key={elm.id}
-          id={elm.id}
-          time={elm.time}
-          interview={helper.getInterview(state, elm.interview)}
-          interviewers={interviewersMap}
-          bookInterview={bookInterview}
-          cancelInterview={cancelInterview}
-        />
-      )
-  })
+  //APPOINTMENT SNIPPET FROM APPOINTMENT DATA MAPPING
+  const appointmentsMap = getAppointmentsForDay(state, state.day).map((elm) => {
+    return (
+      <Appointment
+        key={elm.id}
+        id={elm.id}
+        time={elm.time}
+        interview={getInterview(state, elm.interview)}
+        interviewers={interviewersMap}
+        bookInterview={bookInterview}
+        cancelInterview={cancelInterview}
+      />
+    );
+  });
 
   return (
     <main className="layout">
@@ -47,7 +51,7 @@ export default function Application(props) {
             day={state.day}
             interviewers={state.interviewers}
             setDay={setDay}
-            />
+          />
         </nav>
         <img
           className="sidebar__lhl sidebar--centered"

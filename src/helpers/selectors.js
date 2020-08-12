@@ -1,100 +1,86 @@
-function getAppointmentsForDay(state, day) {
+//Get the list of appointments for a specific day
+export function getAppointmentsForDay(state, day) {
+  const selectedDayObject = getDayObjectByName(state, day);
+  const finalAppointmentsList = [];
 
-  const selectedDayAppointments = state.days.find(elm => elm.name === day)
+  if (selectedDayObject) {
+    const appointmentsArray = selectedDayObject.appointments;
+    const filteredArray = Object.keys(state.appointments).filter((elm) => {
+      return appointmentsArray.includes(Number(elm));
+    });
 
-  let result = []
-
-  if(selectedDayAppointments){
-    const appointmentArray = selectedDayAppointments.appointments
-    const filteredArray = Object.keys(state.appointments).filter(elm => {
-      return appointmentArray.includes(Number(elm))
-    })
-    
-    filteredArray.forEach(elm => {
-      result.push(state.appointments[elm])
-    })
+    filteredArray.forEach((elm) =>
+      finalAppointmentsList.push(state.appointments[elm])
+    );
   }
-  
-  return result
+
+  return finalAppointmentsList;
 }
-exports.getAppointmentsForDay = getAppointmentsForDay
 
+//Get an interview object from interview data
+export function getInterview(state, interview) {
+  let interviewObj = null;
 
-function getInterview(state, interview){
-  let interviewObj = null
-
-  if(interview){
-    const student = interview.student
-    const interviewer = state.interviewers[interview.interviewer]
-    interviewObj = {student, interviewer}
+  if (interview) {
+    const student = interview.student;
+    const interviewer = state.interviewers[interview.interviewer];
+    interviewObj = { student, interviewer };
   }
-  return interviewObj
+  return interviewObj;
 }
-exports.getInterview = getInterview
 
+//Get the interviewers for a specific day
+export function getInterviewersForDay(state, day) {
+  const selectedDayObject = getDayObjectByName(state, day);
+  const finalInterviewersList = [];
 
+  if (selectedDayObject) {
+    const interviewersArray = selectedDayObject.interviewers;
+    const filteredArray = Object.keys(state.interviewers).filter((elm) => {
+      return interviewersArray.includes(Number(elm));
+    });
+    filteredArray.forEach((elm) =>
+      finalInterviewersList.push(state.interviewers[elm])
+    );
+  }
 
-function getInterviewersForDay(state, day) {
-
-   const selectedDayInterviewers = state.days.find(elm => elm.name === day)
-
-   let result = []
-
-   if(selectedDayInterviewers){
-     const interviewersArray = selectedDayInterviewers.interviewers
-     const filteredArray = Object.keys(state.interviewers).filter(elm => {
-       return interviewersArray.includes(Number(elm))
-     })
-    
-     filteredArray.forEach(elm => {
-       result.push(state.interviewers[elm])
-     })
-   }
-  
-  return result
+  return finalInterviewersList;
 }
-exports.getInterviewersForDay = getInterviewersForDay
 
-function getDayObjectByName(days, day){
-  return days.filter(elm => {
-    if(elm.name === day){
-      return elm
-    }
-  })[0]
+//Get a day object by its name
+export function getDayObjectByName(state, day) {
+  return state.days.find((elm) => elm.name === day);
 }
-exports.getDayObjectByName = getDayObjectByName
 
-function getDayObjectById(days, id){
-  return days.filter(elm => {
-    if(elm.id === id){
-      return elm
-    }
-  })[0]
+//Get a new array of day objects with an updated day object
+export function getNewArrayOfDays(days, today, newToday) {
+  const newDays = [...days];
+  if (today === "Monday") {
+    newDays[0] = newToday;
+  } else if (today === "Tuesday") {
+    newDays[1] = newToday;
+  } else if (today === "Wednesday") {
+    newDays[2] = newToday;
+  } else if (today === "Thursday") {
+    newDays[3] = newToday;
+  } else if (today === "Friday") {
+    newDays[4] = newToday;
+  }
+  return newDays;
 }
-exports.getDayObjectById = getDayObjectById
 
-function getNewArrayOfDays(days, today, newToday){
-  const newDays = [...days]
-if(today === 'Monday'){
-  newDays[0] = newToday
-}else if(today === 'Tuesday'){
-  newDays[1] = newToday
-}else if(today === 'Wednesday'){
-  newDays[2] = newToday
-}else if(today === 'Thursday'){
-  newDays[3] = newToday
-}else if(today === 'Friday'){
-  newDays[4] = newToday
-}
-return newDays
-}
-exports.getNewArrayOfDays = getNewArrayOfDays
+//Get the number of spots available for a specific day
+export const getNumberOfSpots = (state, dayObj) => {
+  const spots = dayObj.appointments.filter((elm) => {
+    return state.appointments[elm].interview === null;
+  });
+  return spots.length;
+};
 
-
-const getNumberOfSpots = (day, state) => {
-  const spots = day.appointments.filter(elm => {
-    return state.appointments[elm].interview === null
-  })
-  return spots.length
-}
-exports.getNumberOfSpots = getNumberOfSpots
+//Get a new list of day objects
+export const updatedDayList = (state) => {
+  const today = getDayObjectByName(state, state.day);
+  const newToday = { ...today, spots: getNumberOfSpots(state, today) };
+  const updatedDayList = getNewArrayOfDays(state.days, state.day, newToday);
+  return updatedDayList;
+};

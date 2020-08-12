@@ -6,8 +6,8 @@ import Application from "components/Application";
 
 afterEach(cleanup);
 
-describe('Appointment', () => {
+describe("Appointment", () => {
   xit("renders without crashing", () => {
     render(<Application />);
   });
-})
+});
