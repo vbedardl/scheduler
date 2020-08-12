@@ -1,4 +1,4 @@
-import { updatedDayList } from "../helpers/selectors";
+import { getSpotsForDay } from "../helpers/selectors";
 
 export const SET_DAY = "SET_DAY";
 export const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
@@ -18,7 +18,7 @@ export const reducer = (state, action) => {
 
       const appointment = {
         ...state.appointments[id],
-        interview: { ...interview },
+        interview: interview,
       };
       if (interview === null) {
         appointment.interview = null;
@@ -28,7 +28,15 @@ export const reducer = (state, action) => {
         [id]: appointment,
       };
 
-      const newDays = updatedDayList(state);
+      //Get the new days object updated
+      const newDays = state.days.map((day) => {
+        return day.appointments.includes(id)
+          ? {
+              ...day,
+              spots: getSpotsForDay(day, appointments),
+            }
+          : day;
+      });
 
       return { ...state, appointments, days: newDays };
     }

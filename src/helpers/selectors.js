@@ -69,18 +69,10 @@ export function getNewArrayOfDays(days, today, newToday) {
   return newDays;
 }
 
-//Get the number of spots available for a specific day
-export const getNumberOfSpots = (state, dayObj) => {
-  const spots = dayObj.appointments.filter((elm) => {
-    return state.appointments[elm].interview === null;
-  });
-  return spots.length;
-};
-
-//Get a new list of day objects
-export const updatedDayList = (state) => {
-  const today = getDayObjectByName(state, state.day);
-  const newToday = { ...today, spots: getNumberOfSpots(state, today) };
-  const updatedDayList = getNewArrayOfDays(state.days, state.day, newToday);
-  return updatedDayList;
-};
+//Get number of spots for specific day
+export const getSpotsForDay = (day, appointments) =>
+  day.appointments.length -
+  day.appointments.reduce(
+    (count, id) => (appointments[id].interview ? count + 1 : count),
+    0
+  );

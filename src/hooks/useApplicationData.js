@@ -7,9 +7,6 @@ import {
   SET_INTERVIEW,
 } from "../reducers/application";
 
-import dotenv from "dotenv";
-dotenv.config();
-
 //Main Application Logic
 export default function useApplicationData() {
   //Setting the state/reducer
@@ -42,37 +39,39 @@ export default function useApplicationData() {
 
   //Websocket Set Up
   useEffect(() => {
+    //const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
     const ws = new WebSocket("ws://localhost:8001");
-    //(process.env.REACT_APP_WEBSOCKET_URL);
-    //("ws://localhost:8001");
-    //ws.onopen = (e) => ws.send("ping");
+
     ws.onmessage = (e) => {
       const message = JSON.parse(e.data);
+      console.log(message);
       if (message.type === "SET_INTERVIEW") {
-        if (message.interview) {
-          dispatch({
-            type: SET_INTERVIEW,
-            value: {
-              id: message.id,
-              interview: message.interview,
-            },
-          });
-        } else {
-          dispatch({
-            type: SET_INTERVIEW,
-            value: {
-              id: message.id,
-              interview: null,
-            },
-          });
-        }
+        dispatch({
+          type: SET_INTERVIEW,
+          value: {
+            id: message.id,
+            interview: message.interview,
+          },
+        });
       }
+    };
+    return () => {
+      ws.close();
     };
   }, []);
 
   //Cancelling interview request to the database
   const cancelInterview = (id) => {
-    return axios.delete(`/api/appointments/${id}`);
+    return axios.delete(`/api/appointments/${id}`).then(() => {
+      process.env.NODE_ENV === "test" &&
+        dispatch({
+          type: SET_INTERVIEW,
+          value: {
+            id,
+            interview: null,
+          },
+        });
+    });
   };
 
   //Booking interview request to the database
@@ -82,7 +81,16 @@ export default function useApplicationData() {
       interview: { ...interview },
     };
 
-    return axios.put(`/api/appointments/${id}`, appointment);
+    return axios.put(`/api/appointments/${id}`, appointment).then(() => {
+      process.env.NODE_ENV === "test" &&
+        dispatch({
+          type: SET_INTERVIEW,
+          value: {
+            id,
+            interview,
+          },
+        });
+    });
   };
 
   return { state, setDay, bookInterview, cancelInterview };
