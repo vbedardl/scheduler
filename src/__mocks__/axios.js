@@ -62,7 +62,7 @@ export default {
       return Promise.resolve({
         status: 200,
         statusText: "OK",
-        data: JSON.parse(JSON.stringify(fixtures.days)),
+        data: fixtures.days,
       });
     }
 

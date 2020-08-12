@@ -43,13 +43,11 @@ describe("Application", () => {
     });
     fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
     fireEvent.click(getByText(appointment, "Save"));
-    expect(getByText(appointment, /saving/i)).toBeInTheDocument();
-    //await waitForElement(() => getByText(appointment, "Lydia Miller-Jones"));
-    console.log(prettyDOM(appointments));
-
-    // const day = getAllByTestId(container, 'day').find(day => queryByText(day, 'Monday'))
-    //   console.log(prettyDOM(day))
-    //expect(getByText(day, /no spot remaining/i)).toBeInTheDocument()
+    await waitForElement(() => getByText(appointment, "Lydia Miller-Jones"));
+    const day = getAllByTestId(container, "day").find((day) =>
+      queryByText(day, "Monday")
+    );
+    expect(getByText(day, /no spot remaining/i)).toBeInTheDocument();
   });
 
   xit("loads data, cancels an interview and increases the spots remaining for Monday by 1", async () => {
@@ -63,12 +61,12 @@ describe("Application", () => {
     expect(getByText(appointment, /confirm/i)).toBeInTheDocument();
     fireEvent.click(getByText(appointment, /confirm/i));
     expect(getByText(appointment, /deleting.../i)).toBeInTheDocument();
-    console.log(prettyDOM(appointment));
 
     await waitForElement(() => getByAltText(appointment, "Add"));
-    // const day = getAllByTestId(container, 'day').find(day => queryByText(day, 'Monday'))
-    //   console.log(prettyDOM(day))
-    //expect(getByText(day, /2 spots remaining/i)).toBeInTheDocument()
+    const day = getAllByTestId(container, "day").find((day) =>
+      queryByText(day, "Monday")
+    );
+    expect(getByText(day, /2 spots remaining/i)).toBeInTheDocument();
   });
 
   xit("loads data, edits an interview and keeps the spots remaining for Monday the same", async () => {

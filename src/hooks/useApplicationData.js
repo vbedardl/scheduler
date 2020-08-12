@@ -38,7 +38,7 @@ export default function useApplicationData() {
         },
       });
     });
-  });
+  }, []);
 
   //Websocket Set Up
   useEffect(() => {
