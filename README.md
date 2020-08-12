@@ -30,8 +30,22 @@ npm run storybook
 
 ## ScreenShots
 
-![booking event flow]()
-![deleting event flow]()
-![editing event flow]()
-![form validation flow]()
-![navigation flow]()
+### Booking event flow
+
+![booking event flow](https://raw.githubusercontent.com/vbedardl/scheduler/master/docs/booking-event.gif)
+
+### Deleting event flow
+
+![deleting event flow](https://raw.githubusercontent.com/vbedardl/scheduler/master/docs/deleting-event.gif)
+
+### Editing event flow
+
+![editing event flow](https://raw.githubusercontent.com/vbedardl/scheduler/master/docs/edit-event.gif)
+
+### Form validation flow
+
+![form validation flow](https://raw.githubusercontent.com/vbedardl/scheduler/master/docs/form-validation.gif)
+
+### Navigation flow
+
+![navigation flow](https://raw.githubusercontent.com/vbedardl/scheduler/master/docs/navigation.gif)
