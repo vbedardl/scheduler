@@ -35,7 +35,7 @@ export default function Appointment(props) {
   }, [interview, transition, mode]);
 
   //SAVING BOOKING INFO
-  function save(name, interviewer) {
+  const save = (name, interviewer) => {
     const interview = {
       student: name,
       interviewer,
@@ -46,31 +46,31 @@ export default function Appointment(props) {
       .bookInterview(props.id, interview)
       .then(() => transition("SHOW"))
       .catch((e) => transition("ERROR_SAVE"));
-  }
+  };
 
   //OPEN CONFIRM BOX FOR DELETE
-  function ondelete(id) {
+  const ondelete = (id) => {
     transition(CONFIRM);
-  }
+  };
 
   //CONFIRM THE DELETION AND MAKE THE REQUEST
-  function realDelete(id) {
+  const realDelete = (id) => {
     transition(DELETING);
     props
       .cancelInterview(id)
       .then(() => transition("EMPTY"))
       .catch((e) => transition("ERROR_DELETE", true));
-  }
+  };
 
   //CANCEL THE DELETION
-  function cancelDelete() {
+  const cancelDelete = () => {
     back();
-  }
+  };
 
   //OPEN THE EDIT FORM
-  function edit() {
+  const edit = () => {
     transition("EDIT");
-  }
+  };
 
   return (
     <article className="appointment" data-testid="appointment">
@@ -106,6 +106,7 @@ export default function Appointment(props) {
       {mode === DELETING && <Status message="Deleting..." />}
       {mode === CONFIRM && (
         <Confirm
+          message={"Are you sure you want to delete this appointment?"}
           onCancel={() => cancelDelete()}
           onConfirm={() => realDelete(props.id)}
         />

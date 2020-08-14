@@ -46,7 +46,6 @@ export default function useApplicationData() {
 
     ws.onmessage = (e) => {
       const message = JSON.parse(e.data);
-      console.log(message);
       if (message.type === "SET_INTERVIEW") {
         dispatch({
           type: SET_INTERVIEW,
